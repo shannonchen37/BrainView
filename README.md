@@ -16,33 +16,16 @@
 - MRI/fMRI/DTI NIfTI 数据导入、中间切片展示、影像元数据记录
 - EEG 注意力状态与影像模态的联合分析摘要
 
-## 运行方式
+## 技术栈
 
-安装依赖：
-
-```bash
-pip install -r requirements.txt
-```
-
-启动程序：
-
-```bash
-python src/main.py
-```
-
-打包程序：
-
-```bash
-python build_tools/build.py
-```
-
-打包产物会生成在 `build_tools/dist` 目录中。
-
-## 项目演示
-
-演示视频位于 [docs/demo.mov](docs/demo.mov)。该位置适合作为项目文档资产存放，README 中使用相对路径即可在 GitHub 或本地仓库中访问。
-
-如果后续将仓库长期托管到 GitHub，需要注意 `docs/demo.mov` 约 88MB，接近普通 Git 仓库中视频资产的体积上限；更稳妥的做法是使用 Git LFS 或 Release 附件承载演示视频。
+- Python 3.8+
+- PySide6：桌面端图形界面、视频播放、菜单和对话框
+- BrainFlow：OpenBCI Cyton 数据采集与数据文件写入
+- PySerial：OpenBCI 串口发现与初始化指令下发
+- PyQtGraph：多通道 EEG 实时波形与注意力趋势展示
+- PyTorch：CNN + LSTM 注意力分类模型推理
+- NumPy / SciPy / scikit-learn：数据缓冲、滤波、标准化和离线预处理
+- nibabel：MRI/fMRI/DTI NIfTI 文件读取
 
 ## 项目结构
 
@@ -60,9 +43,7 @@ BrainView_v2.0/
 │   ├── images/            # 图标和说明图
 │   └── videos/            # 视频刺激资源
 ├── Recordings/            # BrainFlow原始采集数据
-├── docs/
-│   ├── demo.mov           # 项目演示视频
-│   └── doc-BrainView-v2.0-Shannon-20250527.md  # 开发问题与解决思路记录
+├── docs/                  # 开发文档与演示视频
 ├── build_tools/           # PyInstaller打包脚本
 └── requirements.txt
 ```
@@ -127,8 +108,6 @@ BrainView_v2.0/
 
 通过 `QMediaPlayer` 和 `QVideoWidget` 支持本地 `.mp4/.avi/.mov` 视频刺激播放，解决了脑电实验中刺激呈现与采集软件分离的问题，实现了“视频任务展示 + EEG 实时监测”的同步实验界面。
 
-通过比例布局和 `QSizePolicy.Expanding` 管理个人信息、视频任务、EEG 波形、注意力曲线和 MRI/fMRI/DTI 展示区，解决了固定像素尺寸导致窗口缩放后模块不跟随变化的问题，实现了可随界面大小自适应的可视化工作台。
-
 通过 `DataFilter.write_file` 将原始 EEG 数据按时间戳写入 `Recordings/Brainflow-RAW*.txt`，解决了实时实验数据难以追溯的问题，实现了后续离线复盘和模型调试所需的数据记录。
 
 ### 7. MRI/fMRI/DTI 数据展示与联合摘要
@@ -141,17 +120,35 @@ BrainView_v2.0/
 
 通过 MRI/fMRI/DTI 菜单生成当前模态与 EEG 状态的联合分析报告，解决了实验人员需要手动整理多模态状态的问题，实现了包含影像元数据、注意力状态和数据流质量的自动摘要。
 
-### 8. 开发问题与解决思路
+## 运行方式
 
-项目开发过程中的关键问题和解决思路记录在 [docs/doc-BrainView-v2.0-Shannon-20250527.md](docs/doc-BrainView-v2.0-Shannon-20250527.md)。该文档从数据预处理、注意力预测和可视化显示三个阶段梳理了工程难点，README 中对应实现如下：
+安装依赖：
 
-- 通过 50 Hz 工频去除、线性 detrend、高通和带通滤波，解决了原始脑电信号噪声强和基线漂移的问题，实现了可用于实时显示与状态分析的预处理链路。
-- 通过数据格式校验、8 通道统一、采样点窗口化和 Z-score 标准化，解决了通道顺序、采样率和输入幅值不一致的问题，实现了模型输入格式的稳定化。
-- 通过 package number 连续性检查、重复包跳过、小间隙插值和断流重连，解决了实时采集过程中数据包可能丢失、重复或中断的问题，实现了更可靠的数据流管理。
-- 通过 `PredictionBuffer` 和预测历史缓存，解决了模型推理耗时与界面连续刷新之间的节奏差异，实现了按固定步长输出注意力结果并展示最近 10 秒趋势。
-- 通过 PyQtGraph 实时曲线和响应式布局，解决了多通道波形刷新卡顿、窗口缩放后模块固定不变的问题，实现了更适合实验现场观察的可视化界面。
+```bash
+pip install -r requirements.txt
+```
 
-### 9. 工程能力对应
+启动程序：
+
+```bash
+python src/main.py
+```
+
+打包程序：
+
+```bash
+python build_tools/build.py
+```
+
+打包产物会生成在 `build_tools/dist` 目录中。
+
+## 数据输出
+
+- 实时采集数据：`Recordings/Brainflow-RAW*.txt`
+- 注意力分类器示例输出：`attention_classifier/output/`
+- 打包应用：`build_tools/dist/`
+
+## 与简历描述的对应关系
 
 通过 OpenBCI 串口配置、BrainFlow 会话管理、消费式数据读取和 PySide6 信号传输，解决了脑电硬件数据流接入、通道数据解析与实时传输不稳定的问题，实现了从脑电信号采集、接收、解析到可视化展示的完整数据链路。
 
@@ -162,20 +159,3 @@ BrainView_v2.0/
 通过集成受试者信息录入、视频刺激播放、脑电信号监测、注意力趋势可视化、日志状态提示和数据落盘，解决了实验过程中受试者信息管理、信号监测、视频任务展示与多模态数据记录分散的问题，实现了“用户信息录入-视频刺激展示-脑电信号监测-分析结果可视化”一体化实验软件平台。
 
 通过整合 MRI、fMRI、DTI 的 NIfTI 读取、切片展示、影像元数据记录和 EEG 注意力状态联合摘要，解决了单一脑电信号难以与结构/功能影像数据协同分析的问题，实现了面向脑电与脑影像联合分析的多模态数据管理与展示界面。
-
-## 数据输出
-
-- 实时采集数据：`Recordings/Brainflow-RAW*.txt`
-- 注意力分类器示例输出：`attention_classifier/output/`
-- 打包应用：`build_tools/dist/`
-
-## 技术栈
-
-- Python 3.8+
-- PySide6：桌面端图形界面、视频播放、菜单和对话框
-- BrainFlow：OpenBCI Cyton 数据采集与数据文件写入
-- PySerial：OpenBCI 串口发现与初始化指令下发
-- PyQtGraph：多通道 EEG 实时波形与注意力趋势展示
-- PyTorch：CNN + LSTM 注意力分类模型推理
-- NumPy / SciPy / scikit-learn：数据缓冲、滤波、标准化和离线预处理
-- nibabel：MRI/fMRI/DTI NIfTI 文件读取
