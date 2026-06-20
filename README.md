@@ -2,9 +2,9 @@
 
 ## 项目演示
 
-<video src="docs/demo.mov" controls width="100%"></video>
+![BrainView demo](docs/demo.gif)
 
-[无法播放时打开演示视频](docs/demo.mov)
+[打开演示 GIF](docs/demo.gif)
 
 ## 项目简介
 
