@@ -4,8 +4,6 @@
 
 ![BrainView demo](docs/demo.gif)
 
-[打开演示 GIF](docs/demo.gif)
-
 ## 项目简介
 
 清华大学 iMoonLab 实验室脑电数据分析系统。
