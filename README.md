@@ -4,6 +4,12 @@
 
 ![BrainView demo](docs/demo.gif)
 
+## 下载 macOS 安装包
+
+Download the macOS `.dmg` from [GitHub Releases](https://github.com/shannonchen37/BrainView/releases).
+
+在 Releases 页面中下载 `BrainView.dmg`，打开后按 macOS 提示安装即可。
+
 ## 项目简介
 
 清华大学 iMoonLab 实验室脑电数据分析系统。
